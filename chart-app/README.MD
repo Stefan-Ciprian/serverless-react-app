@@ -1,15 +1,14 @@
 # React Chart App #
 
 ## To build app: ##
-    $ cd ./cdk
+    $ cd ./chart-app
+    $ npm install
+    $ npm run build
+    $ cd ../cdk
+
     $ npm install
     $ npm run build
     $ cdk bootstrap
-
-    $ cd ../chart-app
-    $ npm install
-    $ npm build
-    $ cd ../cdk
     $ cdk deploy SSRAppStack --parameters mySiteBucketName=react-chart-app
 
 ## To destroy app: ##
