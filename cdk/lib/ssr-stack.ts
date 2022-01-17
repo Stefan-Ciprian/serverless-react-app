@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: MIT-0
 
 import * as cdk from "@aws-cdk/core";
-import { CfnParameter, Duration } from "@aws-cdk/core";
+import { CfnParameter } from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as s3deploy from "@aws-cdk/aws-s3-deployment";
 import * as cloudfront from "@aws-cdk/aws-cloudfront";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as apigw from "@aws-cdk/aws-apigateway";
+
 
 export class SsrStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -39,22 +38,6 @@ export class SsrStack extends cdk.Stack {
       destinationBucket: mySiteBucket
     });
 
-    const ssrFunction = new lambda.Function(this, "ssrHandler", {
-      runtime: lambda.Runtime.NODEJS_12_X,
-      code: lambda.Code.fromAsset("../chart-app/server-build"),
-      memorySize: 128,
-      timeout: Duration.seconds(5),
-      handler: "index.handler"
-    });
-
-    const ssrApi = new apigw.LambdaRestApi(this, "ssrEndpoint", {
-      handler: ssrFunction
-    });
-
-    new cdk.CfnOutput(this, "SSR API URL", { value: ssrApi.url });
-
-    const apiDomainName = `${ssrApi.restApiId}.execute-api.${this.region}.amazonaws.com`;
-
     const distribution = new cloudfront.CloudFrontWebDistribution(
       this,
       "ssr-cdn",
@@ -70,18 +53,6 @@ export class SsrStack extends cdk.Stack {
                 isDefaultBehavior: true
               }
             ]
-          },
-          {
-            customOriginSource: {
-              domainName: apiDomainName,
-              originPath: "/prod",
-              originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY
-            },
-            behaviors: [
-              {
-                pathPattern: "/ssr"
-              }
-            ]
           }
         ]
       }
@@ -89,9 +60,6 @@ export class SsrStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "CF URL", {
       value: `https://${distribution.distributionDomainName}`
-    });
-    new cdk.CfnOutput(this, "Lambda SSR URL", {
-      value: `https://${distribution.distributionDomainName}/ssr`
     });
   }
 }
