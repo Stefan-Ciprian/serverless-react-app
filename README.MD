@@ -1,4 +1,4 @@
-# React Chart App #
+# Serverless React Chart App #
 
 Requirements: node v16.3.0
 
