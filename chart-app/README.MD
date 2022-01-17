@@ -1,5 +1,7 @@
 # React Chart App #
 
+Requirements: node v16.3.0
+
 ## To build app: ##
     $ cd ./chart-app
     $ npm install
